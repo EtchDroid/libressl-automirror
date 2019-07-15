@@ -136,7 +136,7 @@ def download_package_to_repo(fileinfo: Mapping[str, Union[str, Version]]):
     repo = git.Repo(repo_dir)
 
     wget = subprocess.Popen(
-        ["wget", "-O", "-", "ftp://" + fileinfo["domain"] + "/" + fileinfo["path"] + "/" + fileinfo["filename"]],
+        ["wget", "-O", "-", f"ftp://{fileinfo['host']}/{fileinfo['path']}/{fileinfo['filename']}"],
         stdout=subprocess.PIPE
     )
     tar = subprocess.Popen(
