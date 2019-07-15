@@ -123,7 +123,11 @@ def clear_git_repo():
         if item == ".git":
             continue
 
-        shutil.rmtree(os.path.join(repo, item))
+        path = os.path.join(repo, item)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        else:
+            os.unlink(path)
 
 
 def download_package_to_repo(fileinfo: Mapping[str, Union[str, Version]]):
