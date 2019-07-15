@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+import ftplib
 import random
 import re
 import shutil
@@ -90,7 +91,8 @@ def get_package_version(filename: str) -> Optional[Version]:
 
 
 def find_versions_above(mirror: Dict[str, str], target_version: Version) -> Generator[
-    Mapping[str, Union[str, Version]], None, None]:
+        Mapping[str, Union[str, Version]], None, None]:
+    print("Using mirror:", mirror['host'])
     ftp = FTP(mirror['host'])
     ftp.login(user=mirror.get('user', ''), passwd=mirror.get('passwd', ''), acct=mirror.get('acct', ''))
     ftp.cwd(mirror['path'])
@@ -164,15 +166,25 @@ def main():
 
     print("Latest version in git:", gitlatest)
 
-    versions_above = find_versions_above(mirror=random.choice(LIBRESSL_FTP_MIRRORS), target_version=gitlatest)
+    while True:
+        try:
+            mirror = random.choice(LIBRESSL_FTP_MIRRORS)
+            LIBRESSL_FTP_MIRRORS.remove(mirror)
+            versions_above = find_versions_above(mirror=mirror, target_version=gitlatest)
 
-    count = 0
-    for fileinfo in versions_above:
-        print("Downloading version", fileinfo["version"], "from", fileinfo["host"])
+            count = 0
+            for fileinfo in versions_above:
+                print("Downloading version", fileinfo["version"], "from", fileinfo["host"])
 
-        clear_git_repo()
-        download_package_to_repo(fileinfo)
-        count += 1
+                clear_git_repo()
+                download_package_to_repo(fileinfo)
+                count += 1
+
+        except ftplib.error_perm as e:
+            print(f"Mirror returned error: {e}")
+            continue
+        break
+
 
     if count > 0:
         print("Pushing to remote repository")
