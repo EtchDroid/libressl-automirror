@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+import sys
 import ftplib
 import random
 import re
@@ -45,7 +46,6 @@ PKGNAME_RE = re.compile(r'libressl-(?P<version>(?:\d+.)+\d+).tar.gz')
 GIT_TAG_RE = re.compile(r'v(?P<version>(?:\d+.)+\d+)')
 
 _cfg = None
-
 
 def get_config_env() -> Mapping[str, str]:
     global _cfg
@@ -196,4 +196,6 @@ def main():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        os.environ["LSSLM_GIT_REPO"] = sys.argv[1]
     main()
