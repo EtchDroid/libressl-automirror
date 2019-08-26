@@ -16,7 +16,6 @@ from packaging.version import Version
 
 LIBRESSL_FTP_MIRRORS = [
     {"host": "mirror.internode.on.net", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp2.eu.openbsd.org", "path": "/pub/OpenBSD/LibreSSL/"},
     {"host": "mirrors.unb.br", "path": "/pub/OpenBSD/LibreSSL/"},
     {"host": "mirror.csclub.uwaterloo.ca", "path": "/pub/OpenBSD/LibreSSL/"},
     {"host": "ftp.eenet.ee", "path": "/pub/OpenBSD/LibreSSL/"},
