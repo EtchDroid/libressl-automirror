@@ -33,7 +33,6 @@ LIBRESSL_FTP_MIRRORS = [
     {"host": "ftp.man.poznan.pl", "path": "/pub/OpenBSD/LibreSSL/"},
     {"host": "ftp.obsd.si", "path": "/pub/OpenBSD/LibreSSL/"},
     {"host": "ftp.yzu.edu.tw", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.ulak.net.tr", "path": "/pub/OpenBSD/LibreSSL/"},
     {"host": "ftp.mirrorservice.org", "path": "/pub/OpenBSD/LibreSSL/"},
     {"host": "mirror.bytemark.co.uk", "path": "/pub/OpenBSD/LibreSSL/"},
     {"host": "mirror.ox.ac.uk", "path": "/pub/OpenBSD/LibreSSL/"},
