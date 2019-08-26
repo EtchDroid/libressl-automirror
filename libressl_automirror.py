@@ -180,6 +180,9 @@ def main():
         except ftplib.error_perm as e:
             print(f"Mirror returned error: {e}")
             continue
+        except ConnectionRefusedError:
+            print("Connection refused")
+            continue
         break
 
 
