@@ -7,6 +7,7 @@ import random
 import re
 import shutil
 import subprocess
+import traceback
 from ftplib import FTP
 from typing import Mapping, Optional, Generator, Union, Dict
 
@@ -184,6 +185,10 @@ def main():
             continue
         except TimeoutError:
             print("Connection timed out")
+            continue
+        except OSError:
+            print("The world hates us and an unknown error occurred. But we're strong and independent, so we'll skip it.")
+            traeback.print_exc()
             continue
         break
 
