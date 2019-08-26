@@ -3,13 +3,11 @@ dist: bionic
 sudo: true
 
 install:
-  - sudo apt install git python3 python3-venv
+  - sudo apt install git python3 python3-pip
+  - sudo pip --quiet install .
 
 script:
   - git config --global credential.helper store
   - git clone https://${DEPLOY_USER}:${DEPLOY_PASSWD}@github.com/EtchDroid/LibreSSL.git
   - export LSSLM_GIT_REPO="$(pwd)/LibreSSL"
-  - python3 -m venv venv
-  - source venv/bin/activate
-  - pip install .
-  - python libressl_automirror.py
+  - python3 libressl_automirror.py
