@@ -182,6 +182,9 @@ def main():
         except ConnectionRefusedError:
             print("Connection refused")
             continue
+        except TimeoutError:
+            print("Connection timed out")
+            continue
         break
 
 
