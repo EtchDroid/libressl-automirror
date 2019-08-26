@@ -2,7 +2,7 @@ language: python
 sudo: true
 
 install:
-  - sudo pip --quiet install .
+  - sudo pip --quiet install -r requirements.txt
 
 script:
   - git config --global credential.helper store
