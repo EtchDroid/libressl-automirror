@@ -16,29 +16,16 @@ import packaging
 from packaging.version import Version
 
 LIBRESSL_FTP_MIRRORS = [
-    {"host": "mirror.internode.on.net", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "mirrors.unb.br", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "mirror.csclub.uwaterloo.ca", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.eenet.ee", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp2.fr.openbsd.org", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.spline.de", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "mirror.hs-esslingen.de", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.bytemine.net", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.cc.uoc.gr", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.fsn.hu", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.heanet.ie", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.riken.jp", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.bit.nl", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.uio.no", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.eu.openbsd.org", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.man.poznan.pl", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.obsd.si", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.yzu.edu.tw", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp.mirrorservice.org", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "mirror.bytemark.co.uk", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "mirror.ox.ac.uk", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "mirror.exonetric.net", "path": "/pub/OpenBSD/LibreSSL/"},
-    {"host": "ftp5.usa.openbsd.org", "path": "/pub/OpenBSD/LibreSSL/"},
+    {'host': 'mirror.internode.on.net', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': False},
+    {'host': 'mirror.csclub.uwaterloo.ca', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': False},
+    {'host': 'ftp2.fr.openbsd.org', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': False},
+    {'host': 'ftp.fsn.hu', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': False},
+    {'host': 'ftp.heanet.ie', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': False},
+    {'host': 'ftp.riken.jp', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': False},
+    {'host': 'ftp.bit.nl', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': False},
+    {'host': 'ftp.man.poznan.pl', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': True},
+    {'host': 'mirror.bytemark.co.uk', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': False},
+    {'host': 'ftp5.usa.openbsd.org', 'path': '/pub/OpenBSD/LibreSSL/', 'tls': False}
 ]
 
 PKGNAME_RE = re.compile(r'libressl-(?P<version>(?:\d+.)+\d+).tar.gz')
