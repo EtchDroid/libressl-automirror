@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
-import sys
 import ftplib
+import os
 import random
 import re
 import shutil
 import subprocess
+import sys
 import traceback
-from ftplib import FTP
+from ftplib import FTP, FTP_TLS
 from typing import Mapping, Optional, Generator, Union, Dict
 
 import git
@@ -33,6 +33,7 @@ GIT_TAG_RE = re.compile(r'v(?P<version>(?:\d+.)+\d+)')
 
 _cfg = None
 
+
 def get_config_env() -> Mapping[str, str]:
     global _cfg
 
@@ -44,6 +45,11 @@ def get_config_env() -> Mapping[str, str]:
                 _cfg[key[len("LSSLM_"):]] = value
 
     return _cfg
+
+
+def get_use_tls() -> bool:
+    cfg = get_config_env()
+    return cfg.get("TLS_ONLY", "0") == "1"
 
 
 def get_git_latest_version() -> Version:
@@ -71,10 +77,16 @@ def get_package_version(filename: str) -> Optional[Version]:
 
 
 def find_versions_above(mirror: Dict[str, str], target_version: Version) -> Generator[
-        Mapping[str, Union[str, Version]], None, None]:
+    Mapping[str, Union[str, Version]], None, None]:
     print("Using mirror:", mirror['host'])
-    ftp = FTP(mirror['host'])
-    ftp.login(user=mirror.get('user', ''), passwd=mirror.get('passwd', ''), acct=mirror.get('acct', ''))
+    tls = get_use_tls()
+
+    if tls:
+        ftp = FTP_TLS(mirror['host'])
+    else:
+        ftp = FTP(mirror['host'])
+
+    ftp.login(user=mirror.get('user', None), passwd=mirror.get('passwd', ''), acct=mirror.get('acct', ''))
     ftp.cwd(mirror['path'])
 
     for filename, attrs in ftp.mlsd():
@@ -143,6 +155,17 @@ def download_package_to_repo(fileinfo: Mapping[str, Union[str, Version]]):
 def main():
     cfg = get_config_env()
     repo = cfg["GIT_REPO"]
+    tls = get_use_tls()
+
+    mirrors = LIBRESSL_FTP_MIRRORS
+    if tls:
+        print("Using TLS mirrors only")
+        mirrors = list(
+            filter(
+                lambda x: x["tls"],
+                LIBRESSL_FTP_MIRRORS
+            )
+        )
 
     print("Using git repo:", repo)
 
@@ -150,13 +173,13 @@ def main():
 
     print("Latest version in git:", gitlatest)
 
+    count = 0
     while True:
         try:
-            mirror = random.choice(LIBRESSL_FTP_MIRRORS)
-            LIBRESSL_FTP_MIRRORS.remove(mirror)
+            mirror = random.choice(mirrors)
+            mirrors.remove(mirror)
             versions_above = find_versions_above(mirror=mirror, target_version=gitlatest)
 
-            count = 0
             for fileinfo in versions_above:
                 print("Downloading version", fileinfo["version"], "from", fileinfo["host"])
 
@@ -174,11 +197,11 @@ def main():
             print("Connection timed out")
             continue
         except OSError:
-            print("The world hates us and an unknown error occurred. But we're strong and independent, so we'll skip it.")
-            traeback.print_exc()
+            print(
+                "The world hates us and an unknown error occurred. But we're strong and independent, so we'll skip it.")
+            traceback.print_exc()
             continue
         break
-
 
     if count > 0:
         print("Pushing to remote repository")
