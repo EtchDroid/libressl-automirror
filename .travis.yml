@@ -7,4 +7,5 @@ script:
   - git config --global credential.helper store
   - git clone https://${DEPLOY_USER}:${DEPLOY_PASSWD}@github.com/EtchDroid/LibreSSL.git
   - export LSSLM_GIT_REPO="$(pwd)/LibreSSL"
+  - export LSSLM_TLS_ONLY=1
   - python3 libressl_automirror.py
