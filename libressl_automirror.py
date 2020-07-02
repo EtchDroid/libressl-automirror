@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import traceback
 from ftplib import FTP, FTP_TLS
 from typing import Mapping, Optional, Generator, Union, Dict
@@ -104,6 +105,7 @@ def find_versions_above(mirror: Dict[str, str], target_version: Version) -> Gene
             fileinfo = mirror.copy()
             fileinfo["filename"] = filename
             fileinfo["version"] = pkgver
+            fileinfo["tls"] = tls
             yield fileinfo
 
 
@@ -121,25 +123,50 @@ def clear_git_repo():
         else:
             os.unlink(path)
 
-
 def download_package_to_repo(fileinfo: Mapping[str, Union[str, Version]]):
     cfg = get_config_env()
     repo_dir = cfg["GIT_REPO"]
     repo = git.Repo(repo_dir)
+    filename = fileinfo['filename']
+    proto = "ftps" if fileinfo['tls'] else 'ftp'
+    tmpfile = os.path.join(tempfile.gettempdir(), filename)
 
-    wget = subprocess.Popen(
-        ["wget", "-O", "-", f"ftp://{fileinfo['host']}/{fileinfo['path']}/{fileinfo['filename']}"],
-        stdout=subprocess.PIPE
-    )
-    tar = subprocess.Popen(
-        ["tar", "-xz", "--strip-components", "1"],
-        stdin=wget.stdout, cwd=repo_dir
-    )
+    try:
+        wget = subprocess.Popen(
+            ["wget", "-O", tmpfile, f"{proto}://{fileinfo['host']}/{fileinfo['path']}/{filename}"])
+        if wget.wait() != 0:
+            raise RuntimeError("wget exited with non-zero status code {}".format(wget.poll()))
 
-    if tar.wait() != 0:
-        raise RuntimeError("tar exited with non-zero status code {}".format(tar.poll()))
-    if wget.wait() != 0:
-        raise RuntimeError("wget exited with non-zero status code {}".format(wget.poll()))
+        wget = subprocess.Popen(
+            ["wget", "-O", f"{tmpfile}.asc", f"{proto}://{fileinfo['host']}/{fileinfo['path']}/{filename}.asc"])
+        if wget.wait() != 0:
+            raise RuntimeError("wget exited with non-zero status code {}".format(wget.poll()))
+
+        gpg = subprocess.Popen(
+            ["gpgv", "--keyring", "./libressl.gpg", f"{tmpfile}.asc", tmpfile], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        stdout, _ = gpg.communicate()
+        stdout = stdout.decode()
+
+        print(stdout)
+
+        # We expect the main public key to be in the keyring so gpg prints "Good signature"
+        if "Signature made" in stdout \
+           and "Good signature" in stdout \
+           and "Can't check signature: No public key" not in stdout \
+           and gpg.poll() == 0:
+            print("Signature verified")
+        else:
+            raise RuntimeException(f"Unable to verify GPG signature for '{filename}'!")
+
+        tar = subprocess.Popen(
+            ["tar", "-xz", "--strip-components", "1", "-f", tmpfile], cwd=repo_dir
+        )
+        if tar.wait() != 0:
+            raise RuntimeError("tar exited with non-zero status code {}".format(tar.poll()))
+
+    finally:
+        os.remove(tmpfile)
+        os.remove(tmpfile + ".asc")
 
     git_sp = subprocess.Popen(
         "git add *", shell=True, cwd=repo_dir
