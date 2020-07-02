@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+
+      steps:
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+  
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+  
+      - name: Perform mirroring
+        env:
+          DEPLOY_USER: ${{ secrets.DEPLOYUSER }}
+          DEPLOY_PASSWD: ${{ secrets.DEPLOYTOKEN }}
+        run: |
+          git config --global credential.helper store
+          git clone https://${DEPLOY_USER}:${DEPLOY_PASSWD}@github.com/EtchDroid/LibreSSL.git
+          export LSSLM_GIT_REPO="$(pwd)/LibreSSL"
+          export LSSLM_TLS_ONLY=1
+          export PYTHONUNBUFFERED=1
+          python3 libressl_automirror.py
+
+
