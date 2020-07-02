@@ -1,5 +1,7 @@
 # LibreSSL automirror
 
+![.github/workflows/automirror.yml](https://github.com/EtchDroid/libressl-automirror/workflows/.github/workflows/automirror.yml/badge.svg?branch=master)
+
 A script to keep an up-to-date mirror of LibreSSL releases over git.
 
 It is used to automatically update [EtchDroid/LibreSSL](https://github.com/EtchDroid/LibreSSL)
