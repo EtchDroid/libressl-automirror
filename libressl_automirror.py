@@ -89,7 +89,7 @@ def find_versions_above(mirror: Dict[str, str], target_version: Version) -> Gene
     ftp.login(user=mirror.get('user', None), passwd=mirror.get('passwd', ''), acct=mirror.get('acct', ''))
     ftp.cwd(mirror['path'])
 
-    for filename, attrs in ftp.mlsd():
+    for filename, attrs in sorted(ftp.mlsd(), key=lambda tup: tup[0]):
         if not attrs["type"] == "file":
             continue
         if not filename.endswith(".tar.gz"):
