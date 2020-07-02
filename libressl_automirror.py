@@ -247,6 +247,4 @@ def main():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        os.environ["LSSLM_GIT_REPO"] = sys.argv[1]
     main()
