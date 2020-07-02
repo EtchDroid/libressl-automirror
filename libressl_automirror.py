@@ -183,6 +183,10 @@ def main():
     cfg = get_config_env()
     repo = cfg["GIT_REPO"]
     tls = get_use_tls()
+    push = True
+
+    if len(sys.argv) > 1 and sys.argv[1] == "--nopush":
+        push = False
 
     mirrors = LIBRESSL_FTP_MIRRORS
     if tls:
@@ -231,12 +235,13 @@ def main():
         break
 
     if count > 0:
-        print("Pushing to remote repository")
-        git_sp = subprocess.Popen(
-            ["git", "push", "origin", "master", "--tags"],
-            cwd=repo
-        )
-        git_sp.wait()
+        if push:
+            print("Pushing to remote repository")
+            git_sp = subprocess.Popen(
+                ["git", "push", "origin", "master", "--tags"],
+                cwd=repo
+            )
+            git_sp.wait()
     else:
         print("No new version found")
 
