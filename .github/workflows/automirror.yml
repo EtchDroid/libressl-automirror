@@ -19,6 +19,11 @@ jobs:
             python -m pip install --upgrade pip
             pip install -r requirements.txt
 
+        - name: Set up git config
+          run: |
+            git config --global user.name "EtchDroid LibreSSL Mirroring CI"
+            git config --global user.email "etchdroid-ci@depau.eu"
+
         - name: Perform mirroring
           env:
             DEPLOY_USER: ${{ secrets.DEPLOYUSER }}
