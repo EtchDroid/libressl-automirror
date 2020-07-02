@@ -1,0 +1,37 @@
+on:
+  - push
+  - pull_request
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v2
+          
+        - name: Set up Python 3.8
+          uses: actions/setup-python@v1
+          with:
+            python-version: 3.8
+
+        - name: Install dependencies
+          run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+        - name: Prepare test git repository
+          run: |
+            git clone https://github.com/EtchDroid/LibreSSL.git lsslm_test
+            cd lsslm_test
+            git remote set-url origin nope          # just to be sure
+            git reset --hard HEAD~5                 # remove the last 5 commits
+            git tag | tail -n 5 | xargs git tag -d  # also remove last 5 tags
+
+        - name: Test mirror update
+          env:
+            LSSLM_TLS_ONLY: '1'
+            PYTHONUNBUFFERED: '1'
+          run: |
+            export LSSLM_GIT_REPO="$(pwd)/lsslm_test"
+            python3 libressl_automirror.py --nopush
+
